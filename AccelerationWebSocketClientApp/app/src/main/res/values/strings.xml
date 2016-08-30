@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AccelerationWebSocketClientApp</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="connect_button_text">Connect</string>
+</resources>
