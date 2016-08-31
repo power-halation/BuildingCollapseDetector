@@ -14,6 +14,7 @@ import android.hardware.SensorManager;
 import android.view.View;
 import android.widget.EditText;
 
+import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
@@ -29,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -40,12 +43,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     float accgra = 0;
     boolean sendCollsp = true;
     int count = 0;
+    Timer reconnectTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        reconnectTimer = new Timer();
+        reconnectTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if(mClient != null) {
+                    if (mClient.getReadyState() == WebSocket.READYSTATE.CLOSED || mClient.getReadyState() == WebSocket.READYSTATE.CLOSING) {
+                        connectWebSocket(null);
+                    }
+                }
+            }
+        },0,10000);
     }
 
     public void connectWebSocket(View view){
