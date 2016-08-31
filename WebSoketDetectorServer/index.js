@@ -5,7 +5,13 @@ var wss = new WebSocketServer({
 });
 var wc = [];
 wss.on('connection', function(ws) {
+	console.log("Connected");
 	wc.push(ws);
+	ws.on('close',function(){
+		wc = wc.filter(function(v) {
+				return v != ws;
+		});
+	});
 	ws.on('message', function(message) {
 		console.log('received: %s', message);
 		if(message == "Android"){
@@ -14,7 +20,11 @@ wss.on('connection', function(ws) {
 			});
 		} else {
 			wc.forEach(function(client,index,array){
-				client.send(message);
+				try {
+					client.send(message);
+				} catch (e) {
+					console.log(e.message);
+				}
 			});
 		}
 	});
